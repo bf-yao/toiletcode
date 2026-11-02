@@ -1,0 +1,26 @@
+[
+  {
+    "id": "dc2f168e-ebf4-4093-9b8f-a1d229792ac1",
+    "country_code": "HUN",
+    "country": "Hungary",
+    "restroom_code": "2028#",
+    "city": "Budapest",
+    "place": "Starbucks Nyugati",
+    "visited_on": "2026-11-02",
+    "notes": "",
+    "latitude": 47.509965,
+    "longitude": 19.055872
+  },
+  {
+    "id": "7b0d3974-aa48-4f4a-af52-0db1abfe842f",
+    "country_code": "DEU",
+    "country": "Germany",
+    "restroom_code": "2123",
+    "city": "Munich",
+    "place": "Starbucks Stachus",
+    "visited_on": "2026-11-02",
+    "notes": "",
+    "latitude": 48.139384,
+    "longitude": 11.566752
+  }
+]

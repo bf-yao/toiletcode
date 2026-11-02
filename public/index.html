@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7f2">
+  <title>歐洲廁所地圖</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://tile.openstreetmap.org">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    :root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#202b27;background:#f6f7f2;font-synthesis:none;font-optical-sizing:auto}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh}button,input,textarea{font:inherit}button{cursor:pointer}
+    .topbar{height:74px;padding:0 clamp(20px,5vw,72px);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e7e9e1;background:#fbfcf8}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:750;letter-spacing:-.03em}.brand-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:13px;background:#dceee4;font-size:20px}.brand small{display:block;color:#87918b;font-size:11px;font-weight:600;letter-spacing:.08em;margin-top:3px}
+    .top-note{color:#7d8981;font-size:13px}.layout{max-width:1380px;margin:0 auto;padding:36px clamp(18px,4vw,56px) 50px}.intro{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:25px}.eyebrow{color:#52806a;text-transform:uppercase;letter-spacing:.13em;font-weight:750;font-size:11px}.intro h1{font-size:clamp(28px,4vw,42px);letter-spacing:-.05em;margin:8px 0}.intro p{margin:0;color:#7a857e;font-size:14px}.stats{display:flex;gap:10px}.stat{background:#fff;border:1px solid #e8ebe4;border-radius:14px;padding:12px 16px;min-width:100px}.stat strong{font-size:20px;display:block}.stat span{font-size:11px;color:#89938d}
+    .grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(330px,.85fr);gap:20px;align-items:stretch}.panel{background:#fff;border:1px solid #e8ebe4;border-radius:20px;overflow:hidden;box-shadow:0 10px 30px #283b2e08}.map-panel{min-height:600px;position:relative}.panel-head{padding:19px 22px 14px;display:flex;align-items:center;justify-content:space-between}.panel-title{font-size:14px;font-weight:750}.panel-sub{font-size:11px;color:#939c96;margin-top:4px}.map-legend{font-size:11px;color:#808c84;display:flex;align-items:center;gap:7px}.dot{width:9px;height:9px;background:#68ae85;border-radius:50%}#map{height:530px;background:#edf3ef}.leaflet-container{font-family:inherit}.leaflet-control-attribution{font-size:9px!important}.map-hint{position:absolute;z-index:500;bottom:15px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid #e9eee9;border-radius:99px;padding:9px 14px;font-size:11px;color:#708078;box-shadow:0 4px 12px #24372d12;white-space:nowrap;pointer-events:none}
+    .side{display:flex;flex-direction:column;gap:16px}.form-panel{padding:20px 21px}.side-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.side-heading h2{margin:0;font-size:16px;letter-spacing:-.02em}.selected{background:#eff6f0;color:#57806a;border-radius:99px;padding:6px 10px;font-size:11px;font-weight:700;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:11px;color:#68756d;font-weight:650}.field input,.field textarea{width:100%;border:1px solid #e3e8e2;border-radius:10px;padding:10px 11px;background:#fbfcfa;color:#28352e;font-size:12px;outline:none}.field input:focus,.field textarea:focus{border-color:#81b495;box-shadow:0 0 0 3px #dceee477}.field textarea{min-height:66px;resize:vertical}.field input::placeholder,.field textarea::placeholder{color:#b0b8b2}.location-row{display:flex;justify-content:space-between;align-items:center;gap:8px}.coordinates{font-size:10px;color:#89958d}.location-button{white-space:nowrap;padding:8px 10px}.actions{display:flex;gap:8px;margin-top:14px}.primary,.secondary{border:0;border-radius:10px;padding:10px 14px;font-size:12px;font-weight:700}.primary{background:#315d47;color:white;flex:1}.primary:hover{background:#254b38}.secondary{background:#f1f3ef;color:#68756d}.hidden{display:none!important}
+    .records-panel{padding:18px 20px;flex:1;min-height:170px}.records-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.records-head h2{font-size:14px;margin:0}.records-count{font-size:10px;color:#94a098}.record-list{display:flex;flex-direction:column;gap:8px;max-height:250px;overflow:auto}.record{border:1px solid #edf0eb;border-radius:12px;padding:10px 11px;display:grid;grid-template-columns:1fr auto;gap:6px 10px}.record-main{min-width:0}.record-code{font-size:12px;font-weight:750;overflow-wrap:anywhere}.record-meta{font-size:10px;color:#8a958d;margin-top:4px}.record-notes{font-size:10px;color:#657168;line-height:1.5;overflow-wrap:anywhere}.record-actions{display:flex;gap:5px;align-items:start}.mini{border:0;background:#f1f4ef;border-radius:7px;padding:5px 7px;color:#718077;font-size:10px}.mini.delete{color:#ae716a}.empty{color:#9aa39c;text-align:center;padding:22px 8px;font-size:12px}.error{display:none;margin-top:12px;padding:9px 11px;border-radius:9px;background:#fff2ef;color:#a55248;font-size:11px;line-height:1.5}.footer{text-align:center;color:#a0a9a2;font-size:10px;margin-top:22px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.map-panel{min-height:450px}#map{height:380px}.side{display:grid;grid-template-columns:1fr 1fr;align-items:start}.records-panel{min-height:100%}}@media(max-width:600px){.topbar{height:64px}.top-note{display:none}.layout{padding-top:25px}.intro{align-items:start;flex-direction:column}.stats{width:100%}.stat{flex:1}.map-panel{min-height:400px}.side{display:flex}.records-panel{min-height:150px}.form-panel{padding:17px}}
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="brand"><div class="brand-mark">🚻</div><div>旅途小記<small>EUROPE RESTROOM NOTES</small></div></div><div class="top-note">把旅途中遇到的小地方，好好記下來。</div></header>
+  <main class="layout">
+    <section class="intro"><div><div class="eyebrow">MY TRAVEL MAP</div><h1>歐洲廁所地圖</h1><p>點選去過的國家，記錄廁所 code 和旅途備忘。</p></div><div class="stats"><div class="stat"><strong id="total-count">0</strong><span>筆紀錄</span></div><div class="stat"><strong id="country-count">0</strong><span>個國家</span></div></div></section>
+    <section class="grid">
+      <div class="panel map-panel"><div class="panel-head"><div><div class="panel-title">探索地圖</div><div class="panel-sub">點選地圖上的精確位置放置標記</div></div><div class="map-legend"><i class="dot"></i>有紀錄</div></div><div id="map" aria-label="歐洲互動地圖"></div><div class="map-hint">✦ 點地圖選位置即可記錄，不必先選國家</div></div>
+      <aside class="side">
+        <section class="panel form-panel"><div class="side-heading"><h2 id="form-title">新增一筆紀錄</h2><span class="selected" id="selected-country">國家資訊（選填）</span></div>
+          <form id="record-form"><div class="form-grid">
+            <div class="field"><label for="restroom_code">廁所 code *</label><input id="restroom_code" required maxlength="80" placeholder="例如：#1234"></div>
+            <div class="field"><label for="visited_on">日期</label><input id="visited_on" type="date"></div>
+            <div class="field"><label for="city">城市</label><input id="city" maxlength="100" placeholder="例如：巴黎"></div>
+            <div class="field"><label for="place">地點／店名</label><input id="place" maxlength="160" placeholder="例如：車站、咖啡店"></div>
+            <div class="field full"><label>位置 *</label><div class="location-row"><span class="coordinates" id="coordinates">尚未選取位置</span><button class="secondary location-button" id="locate-button" type="button">使用目前位置</button></div><div class="form-grid"><div class="field"><label for="latitude">緯度</label><input id="latitude" type="number" step="any" min="-90" max="90" placeholder="例如：48.8584"></div><div class="field"><label for="longitude">經度</label><input id="longitude" type="number" step="any" min="-180" max="180" placeholder="例如：2.2945"></div></div></div>
+            <div class="field full"><label for="notes">備註</label><textarea id="notes" maxlength="2000" placeholder="費用、使用方式、乾淨程度……"></textarea></div>
+          </div><div class="error" id="error-box"></div><div class="actions"><button class="primary" id="save-button" type="submit">儲存紀錄</button><button class="secondary hidden" id="cancel-edit" type="button">取消</button></div></form>
+        </section>
+        <section class="panel records-panel"><div class="records-head"><h2 id="list-title">所有紀錄</h2><span class="records-count" id="list-count">0 筆</span></div><div class="record-list" id="record-list"><div class="empty">讀取紀錄中……</div></div></section>
+      </aside>
+    </section>
+    <div class="footer">地圖資料 © OpenStreetMap contributors · 國界資料 © geo-countries</div>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map=L.map('map',{scrollWheelZoom:false}).setView([49.2,12],4);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap'}).addTo(map);
+    const state={records:[],selected:null,editing:null,layer:null,pin:null,pinMarker:null,recordMarkers:null,countryLayers:[]};
+    const $=id=>document.getElementById(id);
+    function todayLocal(){const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;}
+    $('visited_on').value=todayLocal();
+    const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const features=[];
+    state.recordMarkers=L.layerGroup().addTo(map);
+    map.on('click',event=>setLocation(event.latlng));
+    function pointInRing(point,ring){let inside=false;for(let i=0,j=ring.length-1;i<ring.length;j=i++){const [xi,yi]=ring[i];const [xj,yj]=ring[j];if((yi>point.lat)!==(yj>point.lat)&&point.lng<(xj-xi)*(point.lat-yi)/(yj-yi)+xi)inside=!inside;}return inside;}
+    function containsPoint(feature,point){const geometry=feature.geometry;if(!geometry)return false;const polygons=geometry.type==='Polygon'?[geometry.coordinates]:geometry.type==='MultiPolygon'?geometry.coordinates:[];return polygons.some(rings=>pointInRing(point,rings[0])&&!rings.slice(1).some(ring=>pointInRing(point,ring)));}
+    function countryAt(latlng){return state.countryLayers.find(({feature,layer})=>layer.getBounds().contains(latlng)&&containsPoint(feature,latlng));}
+    function setLocation(latlng,center=false){state.pin={latitude:latlng.lat,longitude:latlng.lng};$('latitude').value=latlng.lat.toFixed(6);$('longitude').value=latlng.lng.toFixed(6);const found=countryAt(latlng);setCountry(found?countryName(found.feature):'',found?countryCode(found.feature):'');if(state.pinMarker)state.pinMarker.remove();state.pinMarker=L.marker(latlng,{draggable:true}).addTo(map).bindPopup('這筆紀錄的位置');state.pinMarker.on('dragend',event=>setLocation(event.target.getLatLng()));$('coordinates').textContent=`${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;$('error-box').style.display='none';if(center)map.setView(latlng,16);}
+    function updateLocationFromInputs(){const latitude=$('latitude').value.trim(),longitude=$('longitude').value.trim();if(!latitude||!longitude){state.pin=null;$('coordinates').textContent='請輸入完整經緯度';if(state.pinMarker){state.pinMarker.remove();state.pinMarker=null}setCountry('','');return}const lat=Number(latitude),lng=Number(longitude);if(!Number.isFinite(lat)||!Number.isFinite(lng)||lat < -90||lat > 90||lng < -180||lng > 180){state.pin=null;$('coordinates').textContent='座標超出有效範圍';return}setLocation({lat,lng});}
+    $('latitude').addEventListener('change',updateLocationFromInputs);$('longitude').addEventListener('change',updateLocationFromInputs);
+    $('locate-button').addEventListener('click',()=>{if(!navigator.geolocation){showError('這個瀏覽器不支援目前位置定位。');return}navigator.geolocation.getCurrentPosition(position=>setLocation({lat:position.coords.latitude,lng:position.coords.longitude},true),error=>showError(error.code===1?'請允許瀏覽器存取位置，或直接點選地圖設定位置。':'無法取得目前位置，請直接點選地圖設定位置。'),{enableHighAccuracy:true,timeout:15000,maximumAge:0});});
+    function countryCode(feature){const p=feature.properties||{};return p.ISO_A3_EH&&p.ISO_A3_EH!=='-99'?p.ISO_A3_EH:p.ISO_A3||p.ADM0_A3||p['ISO3166-1-Alpha-3']||'';}
+    function countryName(feature){const p=feature.properties||{};return p.ADMIN||p.name||p.NAME||'未知國家';}
+    function hasCountry(code){return state.records.some(r=>r.country_code===code);}
+    function styleCountry(feature){const active=hasCountry(countryCode(feature));return{color:'#fff',weight:1,fillColor:active?'#73b88d':'#dfe8df',fillOpacity:active ? .88 : .85};}
+    function setCountry(name,code){state.selected=name&&code?{name,code}:null;$('selected-country').textContent=state.selected?name:'國家資訊（選填）';$('error-box').style.display='none';render();}
+    async function loadMap(){
+      try{const response=await fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson');if(!response.ok)throw new Error('地圖資料載入失敗');const data=await response.json();
+        state.layer=L.geoJSON(data,{style:styleCountry,onEachFeature:(feature,layer)=>{const code=countryCode(feature);const name=countryName(feature);state.countryLayers.push({feature,layer});layer.bindTooltip(name,{sticky:true});layer.on('click',()=>setCountry(name,code));}}).addTo(map);
+      }catch(err){console.error(err);showError('無法載入地圖國界。請確認網路連線後重新整理。');}
+    }
+    function visibleRecords(){return state.selected?state.records.filter(r=>r.country_code===state.selected.code):state.records;}
+    function render(){
+      const records=visibleRecords();$('total-count').textContent=state.records.length;$('country-count').textContent=new Set(state.records.map(r=>r.country_code).filter(Boolean)).size;
+      $('list-title').textContent=state.selected?`${state.selected.name} 的紀錄`:'所有紀錄';$('list-count').textContent=`${records.length} 筆`;
+      $('record-list').innerHTML=records.length?records.map(r=>`<article class="record"><div class="record-main"><div class="record-code">${escapeHtml(r.restroom_code)}</div><div class="record-meta">${escapeHtml([r.country,r.city,r.place,r.visited_on].filter(Boolean).join(' · '))}</div>${r.notes?`<div class="record-notes">${escapeHtml(r.notes)}</div>`:''}</div><div class="record-actions"><button class="mini" data-show="${escapeHtml(r.id)}" ${Number.isFinite(r.latitude)&&Number.isFinite(r.longitude)?'':'disabled title="這筆紀錄沒有位置"'}>地圖</button><button class="mini" data-edit="${escapeHtml(r.id)}" aria-label="編輯">編輯</button><button class="mini delete" data-delete="${escapeHtml(r.id)}" aria-label="刪除">刪除</button></div></article>`).join(''):'<div class="empty">還沒有紀錄，先在地圖選一個國家吧。</div>';
+      $('record-list').querySelectorAll('[data-show]').forEach(button=>button.onclick=()=>showOnMap(button.dataset.show));
+      $('record-list').querySelectorAll('[data-edit]').forEach(button=>button.onclick=()=>beginEdit(button.dataset.edit));
+      $('record-list').querySelectorAll('[data-delete]').forEach(button=>button.onclick=()=>removeRecord(button.dataset.delete));
+      state.recordMarkers.clearLayers();state.records.filter(r=>Number.isFinite(r.latitude)&&Number.isFinite(r.longitude)).forEach(record=>{const marker=L.marker([record.latitude,record.longitude]).bindPopup(`<strong>${escapeHtml(record.restroom_code)}</strong><br>${escapeHtml([record.country,record.city,record.place].filter(Boolean).join(' · '))}`);marker.recordId=record.id;marker.addTo(state.recordMarkers);});
+      if(state.layer)state.layer.setStyle(styleCountry);
+    }
+    function showError(message){$('error-box').textContent=message;$('error-box').style.display='block';}
+    function showOnMap(id){const record=state.records.find(item=>item.id===id);if(!record||!Number.isFinite(record.latitude)||!Number.isFinite(record.longitude))return;const position=[record.latitude,record.longitude];map.flyTo(position,16,{duration:.7});state.recordMarkers.eachLayer(marker=>{if(marker.recordId===id)marker.openPopup();});$('map').scrollIntoView({behavior:'smooth',block:'center'});}
+    function resetForm(){state.editing=null;state.pin=null;if(state.pinMarker){state.pinMarker.remove();state.pinMarker=null}$('coordinates').textContent='尚未選取位置';$('latitude').value='';$('longitude').value='';$('record-form').reset();$('visited_on').value=todayLocal();$('form-title').textContent='新增一筆紀錄';$('save-button').textContent='儲存紀錄';$('cancel-edit').classList.add('hidden');$('error-box').style.display='none';}
+    function beginEdit(id){const record=state.records.find(item=>item.id===id);if(!record)return;state.editing=id;setCountry(record.country,record.country_code);for(const field of ['restroom_code','city','place','visited_on','notes'])$(field).value=record[field]||'';if(Number.isFinite(record.latitude)&&Number.isFinite(record.longitude)){setLocation({lat:record.latitude,lng:record.longitude},true)}else{state.pin=null;$('latitude').value='';$('longitude').value='';$('coordinates').textContent='此舊紀錄尚未設定位置'}$('form-title').textContent='編輯紀錄';$('save-button').textContent='更新紀錄';$('cancel-edit').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'});}
+    async function request(url,options={}){const response=await fetch(url,{headers:{'Content-Type':'application/json'},...options});if(!response.ok){let detail='操作失敗';try{detail=(await response.json()).detail||detail;if(Array.isArray(detail))detail=detail.map(item=>item.msg).join('、')}catch{}throw new Error(detail)}return response.status===204?null:response.json();}
+    $('record-form').addEventListener('submit',async event=>{event.preventDefault();if($('latitude').value.trim()&&$('longitude').value.trim())updateLocationFromInputs();if(!state.pin){showError('請輸入有效的經緯度，或點選地圖設定位置。');return}const payload={country_code:state.selected?.code||'',country:state.selected?.name||'',restroom_code:$('restroom_code').value.trim(),city:$('city').value.trim(),place:$('place').value.trim(),visited_on:$('visited_on').value,notes:$('notes').value.trim(),latitude:state.pin.latitude,longitude:state.pin.longitude};try{await request(state.editing?`/api/records/${encodeURIComponent(state.editing)}`:'/api/records',{method:state.editing?'PUT':'POST',body:JSON.stringify(payload)});await refresh();resetForm()}catch(error){showError(error.message)}});
+    $('cancel-edit').onclick=resetForm;
+    async function removeRecord(id){if(!confirm('確定刪除這筆紀錄？'))return;try{await request(`/api/records/${encodeURIComponent(id)}`,{method:'DELETE'});await refresh()}catch(error){showError(error.message)}}
+    async function refresh(){state.records=await request('/api/records');render()}
+    (async()=>{try{await Promise.all([loadMap(),refresh()])}catch(error){showError(error.message)}})();
+  </script>
+</body>
+</html>
