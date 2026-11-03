@@ -15,7 +15,11 @@
 
 將此資料夾推送到 GitHub，在 Vercel 選擇 **Add New → Project** 並匯入該 repository；Vercel 會使用根目錄的 `vercel.json` 與 `requirements.txt` 部署 Python function。
 
-**重要：** Vercel 的 serverless 檔案系統不保證持久，也不適合多個 function instance 共用。這個初版在 Vercel 上可瀏覽地圖與讀取初始 JSON，但新增、修改、刪除會回傳提示並停用，避免讓人誤以為資料已永久保存。本機則會寫入 `data/records.json`。正式在線使用前，請將儲存層接至 Vercel Blob、Postgres 或其他持久化資料庫。
+**Vercel Blob 儲存：** 本專案會在 Vercel 上將整份紀錄 JSON 儲存到 private Vercel Blob 的 `restroom-records/records.json`。在 Vercel 專案的 **Storage** 建立一個 **Private Blob** store，並將它連結到此專案的 Production（需要預覽環境時也連結 Preview）。連結後 Vercel 會提供 Blob 所需的環境變數；不需手動把 token 寫入程式或提交到 Git。重新部署後，新增、修改、刪除會讀寫 Blob。若 Blob 尚無紀錄檔，第一次讀取會先以部署包內的 `data/records.json` 作為初始資料，首次寫入時建立 Blob 檔案。
+
+本機若未設定 Blob 環境變數，仍會使用 `data/records.json`。若要在本機連同 Vercel Blob 測試，可先安裝 Vercel CLI、在專案目錄執行 `vercel link` 和 `vercel env pull`，再用 `uvicorn api.index:app --reload --env-file .env.local` 啟動 FastAPI。請勿提交 `.env.local` 或將 Blob token 貼到前端。
+
+這個原型會以覆寫單一 JSON Blob 的方式保存，適合個人低流量使用；不同 serverless 執行個體同時寫入時，最後寫入可能覆蓋較早的變更。API 目前沒有登入驗證，請勿儲存高度敏感的個人資訊或使用公開分享。
 
 ## 備註
 
