@@ -13,7 +13,7 @@
 
 ## 部署到 Vercel
 
-將此資料夾推送到 GitHub，在 Vercel 選擇 **Add New → Project** 並匯入該 repository；Vercel 會使用根目錄的 `vercel.json` 與 `requirements.txt` 部署 Python function。
+將此資料夾推送到 GitHub，在 Vercel 選擇 **Add New → Project** 並匯入該 repository；Vercel 會以根目錄的 `index.py` 作為 FastAPI entrypoint，並使用 `requirements.txt` 安裝相依套件。不要設定把所有網址 rewrite 到 `/api/index`，避免 API 請求無法命中 FastAPI 路由。
 
 **Vercel Blob 儲存：** 本專案會在 Vercel 上將整份紀錄 JSON 儲存到 private Vercel Blob 的 `restroom-records/records.json`。在 Vercel 專案的 **Storage** 建立一個 **Private Blob** store，並將它連結到此專案的 Production（需要預覽環境時也連結 Preview）。連結後 Vercel 會提供 Blob 所需的環境變數；不需手動把 token 寫入程式或提交到 Git。重新部署後，新增、修改、刪除會讀寫 Blob。若 Blob 尚無紀錄檔，第一次讀取會先以部署包內的 `data/records.json` 作為初始資料，首次寫入時建立 Blob 檔案。
 
