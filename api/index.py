@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import threading
 from pathlib import Path
@@ -17,6 +18,7 @@ BLOB_PATHNAME = "restroom-records/records.json"
 _write_lock = threading.Lock()
 
 app = FastAPI(title="歐洲廁所地圖")
+logger = logging.getLogger(__name__)
 
 
 class RecordInput(BaseModel):
@@ -59,6 +61,7 @@ def read_records() -> list[dict]:
         # Seed a new Blob store from the JSON file bundled with the deployment.
         return read_local_records()
     except Exception as error:
+        logger.exception("Vercel Blob read failed")
         raise HTTPException(
             status_code=503,
             detail="無法讀取 Vercel Blob，請確認 Blob store 已連結至專案。",
@@ -90,6 +93,7 @@ def write_records(records: list[dict]) -> None:
                 cache_control_max_age=60,
             )
         except Exception as error:
+            logger.exception("Vercel Blob write failed")
             raise HTTPException(
                 status_code=503,
                 detail="無法寫入 Vercel Blob，請確認 Blob store 權限與設定。",
